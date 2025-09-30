@@ -88,6 +88,28 @@
     });
   }
 
+  // After rendering, ensure selects are wide enough from the start.
+  function adjustSelects(root) {
+    const selects = root.querySelectorAll('select.blank-select');
+    selects.forEach((sel) => {
+      const optionTexts = Array.from(sel.options).map((o) => o.text || '');
+      const placeholder = optionTexts[0] || '';
+      // measure longest label with actual computed font
+      let maxPx = 0;
+      for (const label of optionTexts) {
+        const px = __measure(label, sel);
+        if (px > maxPx) maxPx = px;
+      }
+      const cs = getComputedStyle(sel);
+      const padBorder = (parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) +
+                         parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth));
+      const minPx = Math.ceil(maxPx + padBorder + 18); // arrow space
+      sel.style.minWidth = `${minPx}px`;
+      const currentText = sel.options[sel.selectedIndex]?.text || placeholder;
+      applyExactPixelWidth(sel, currentText, 18);
+    });
+  }
+
   function renderTokens(container, tokens, answers, reportId) {
     tokens.forEach((t) => {
       if (typeof t === 'string') {
@@ -199,6 +221,8 @@
       });
 
       page.appendChild(section);
+      // ensure all selects rendered so we can size them
+      adjustSelects(section);
     });
 
     const notes = document.createElement('div');
@@ -224,6 +248,25 @@
   }
 
   function init() {
+    // Ensure CSS is loaded (GH Pages cache/path issues safeguard)
+    (function ensureCSS(){
+      const probe = document.createElement('input');
+      probe.className = 'blank-input';
+      probe.style.position = 'absolute';
+      probe.style.opacity = '0';
+      probe.style.pointerEvents = 'none';
+      document.body.appendChild(probe);
+      const cs = getComputedStyle(probe);
+      const applied = cs.borderLeftColor !== '' && cs.borderLeftWidth !== '0px';
+      if (!applied) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = './styles.css?v=' + Date.now();
+        document.head.appendChild(link);
+      }
+      document.body.removeChild(probe);
+    })();
+
     populateSelect();
     const first = window.reports && window.reports[0];
     if (first) select.value = first.id;
