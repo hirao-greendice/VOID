@@ -1,0 +1,25 @@
+            },
+            {
+                // LEFT NEXT: lines + arcs combo per beat
+                type: GIMMICK_TYPES.LINES_ARCS,
+                settings: {
+                    x: 50,
+                    y: 50,
+                    size: 400,
+                    // angles in degrees; cx,cy,radius in percent of element size; width in px (scaled)
+                    beats: [
+                        { beat: 1,
+                          lines: [ { x: 20, y: 25, length: 26, width: 8 } ],
+                          arcs:  [ { cx: 50, cy: 50, radius: 35, startAngle: 200, endAngle: 250, width: 8 } ] },
+                        { beat: 2,
+                          lines: [ { x: 80, y: 75, length: 26, width: 8 } ],
+                          arcs:  [ { cx: 50, cy: 50, radius: 35, startAngle: 20,  endAngle: 80,  width: 8 } ] },
+                        { beat: 3,
+                          lines: [ { x: 20, y: 75, length: 26, width: 8 } ],
+                          arcs:  [ { cx: 50, cy: 50, radius: 35, startAngle: 110, endAngle: 160, width: 8 } ] },
+                        { beat: 4,
+                          lines: [ { x: 80, y: 25, length: 26, width: 8 } ],
+                          arcs:  [ { cx: 50, cy: 50, radius: 35, startAngle: 290, endAngle: 340, width: 8 } ] }
+                    ]
+                }
+            }
