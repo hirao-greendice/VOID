@@ -60,7 +60,7 @@ main { padding: 18px; }
   background:
     radial-gradient(#b9d8ff 0.5px, transparent 0.5px) 0 0/12px 12px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  padding: 8mm 16mm 8mm;
+  padding: 8mm 8mm 8mm;
   border: 1px solid #e5eaf0;
 }
 
