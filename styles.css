@@ -59,7 +59,7 @@ main { padding: 18px; }
   background:
     radial-gradient(#b9d8ff 0.5px, transparent 0.5px) 0 0/12px 12px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  padding: 16mm 16mm 20mm;
+  padding: 8mm 16mm 8mm;
   border: 1px solid #e5eaf0;
 }
 
@@ -71,7 +71,7 @@ main { padding: 18px; }
 .subtitle { color: var(--muted); margin-top: 4px; font-family: inherit; font-size: 32px; font-weight: 700; }
 
 .section {
-  margin-top: 8mm;
+  margin-top: 0mm;
 }
 .section-title {
   display: flex;
@@ -102,7 +102,7 @@ main { padding: 18px; }
 
 .paragraph {
   line-height: 2.25; /* 行間を少し広げる */
-  font-size: 15px;
+  font-size: 16px;
   white-space: pre-wrap; /* respect \n in content */
 }
 .paragraph + .paragraph { margin-top: 6px; }

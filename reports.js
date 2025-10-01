@@ -48,8 +48,8 @@
             title: '情報ボックスBについて',
             tokens: [
               '情報ボックスBを以下の方法で開けた。\n',
-              '①', T.choice('method', ['ダスシステム', 'ヌルシステム'], 20), 'で、素材',
-              T.text('material', { solution: 'レンガ', size: 12, placeholder: '' }), 'を使って\n　',
+              '①', T.choice('method', ['ダスシステム', 'ヌルシステム'], 20), 'で、\n素材',
+              T.text('material', { solution: 'レンガ', size: 12, placeholder: '' }), 'を使って、',
               T.choice('cardS', { options: ['A','N','S','W','E','R'], size: 10, placeholder: '', solution: 'S' }), 'のカードの',
               T.text('fromColor', { solution: '青', size: 6, placeholder: '' }), '色を',
               T.text('toColor', { solution: '赤', size: 6, placeholder: '' }), '色に変えた。\n',
@@ -66,11 +66,20 @@
           },
           {
             tokens: [
-              '\nつまり、判定カメラは',
-              T.choice('judge1', ['カードそのもの', 'カードに書かれた文字'], 22),
-              'ではなく',
-              T.choice('judge2', ['カードそのもの', 'カードに書かれた文字'], 22),
+              '\nつまり、判定カメラは\n真上から見える',
+              T.choice('judge1', ['カードそのもの', '文字'], 22),
+              'で判定しているのではなく、\n真上から見える',
+              T.choice('judge2', ['カードそのもの', '文字'], 22),
               'を判定している。'
+            ]
+          },
+          {
+            tokens: [
+              T.choice('judge1', ['カードそのもの', '文字'], 22),
+              'はカードの',
+              T.text('ni', { solution: '色', size: 8, placeholder: '' }), 'や ',
+              T.text('tsu', { solution: '向き', size: 8, placeholder: '' }), 'の変更をしたり、\n',
+              T.text('ko', { solution: '透明シート', size: 18, placeholder: '' }), 'を重ねたりしても問題なく判定される。'
             ]
           }
         ]
@@ -89,15 +98,19 @@
           {
             tokens: [
               'ところで、この会場にある判定カメラは全て',
-              T.choice('sameOrDiff', ['同じ', '異なる'], 10), 'なので\n',
-              '「６」の', T.choice('sixChange', ['向き', '色'], 6), 'を変えて８よりも大きい数「９」を示すことができる。\n',
-              'しかし、アンドロイドは「８」を提出したにもかかわらず、\n',
+              T.choice('sameOrDiff', ['同じ', '異なる'], 10), 'ため、\n先ほど判明した判定カメラの性質から、\n',
+              T.text('number', { solution: '6', size: 4, placeholder: '' }), 
+              'の', T.choice('sixChange', ['向き', '色'], 6), 'を変えて８よりも大きい数',
+              T.text('number', { solution: '9', size: 4, placeholder: '' }),'を示すことができる。\n',
+              'しかし、アンドロイドは',
+              T.text('number', { solution: '8', size: 4, placeholder: '' }),'を提出したにもかかわらず、\n',
               '第一の試練に', T.choice('result', ['敗北している', '敗北していない'], 18), '。'
             ]
           },
           {
             tokens: [
-              '\nつまり、アンドロイドは「８」を使って最も',
+              '\nつまり、アンドロイドは',
+              T.text('number', { solution: '8', size: 4, placeholder: '' }),'を使って最も',
               T.choice('bigSmall', ['大きい', '小さい'], 10),
               '数を示していることがわかる。'
             ]
@@ -109,7 +122,9 @@
         blocks: [
           {
             tokens: [
-              'アンドロイドは、「８」の', T.choice('infty', ['向き', '色'], 6), 'を変えて「∞」を示した。'
+                'アンドロイドは、',
+              T.text('number', { solution: '8', size: 4, placeholder: '' }),'の', T.choice('infty', ['向き', '色'], 6), 'を変えて',
+              T.text('number', { solution: '∞', size: 4, placeholder: '' }),'を示した。'
             ]
           }
         ]
