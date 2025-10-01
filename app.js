@@ -76,7 +76,8 @@
         sel.dataset.placeholder = placeholder;
         const empty = document.createElement('option'); empty.value = ''; empty.textContent = placeholder; sel.appendChild(empty);
         optsArr.forEach((opt) => { const o = document.createElement('option'); o.value = opt; o.textContent = opt; sel.appendChild(o); });
-        sel.value = useSolutions ? (t.solution ?? '') : (answers[t.id] || '');
+        const fallbackSolution = (optsArr && optsArr.length) ? optsArr[0] : '';
+        sel.value = useSolutions ? String((t.solution ?? fallbackSolution)) : (answers[t.id] || '');
         const baseRaw = t.size != null ? t.size : Math.max(displayWidth(placeholder), optsArr.reduce((m, s) => Math.max(m, displayWidth(s)), 0)) * DEFAULT_SCALE;
         setChWidth(sel, baseRaw);
         wrap.appendChild(sel); container.appendChild(wrap);
@@ -129,4 +130,3 @@
 
   document.addEventListener('DOMContentLoaded', init);
 })();
-
