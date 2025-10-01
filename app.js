@@ -72,7 +72,18 @@
         const wrap = document.createElement('span'); wrap.className = 'blank';
         const sel = document.createElement('select'); sel.className = 'blank-select'; sel.dataset.fieldId = t.id;
         const optsArr = (t.options || []).map(String);
-        const placeholder = (t.placeholder !== undefined) ? String(t.placeholder) : `（${optsArr.join('・')}）`;
+        const isAnswerSet = optsArr.length === 6 && ['A','N','S','W','E','R'].every((x) => optsArr.includes(x));
+        let placeholder;
+        if (t.placeholder !== undefined) {
+          if (t.placeholder === '' && !isAnswerSet) {
+            // For non-ANSWER selects, show options when placeholder is intentionally blank
+            placeholder = `（${optsArr.join('・')}）`;
+          } else {
+            placeholder = String(t.placeholder);
+          }
+        } else {
+          placeholder = `（${optsArr.join('・')}）`;
+        }
         sel.dataset.placeholder = placeholder;
         const empty = document.createElement('option'); empty.value = ''; empty.textContent = placeholder; sel.appendChild(empty);
         optsArr.forEach((opt) => { const o = document.createElement('option'); o.value = opt; o.textContent = opt; sel.appendChild(o); });

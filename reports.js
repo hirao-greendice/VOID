@@ -76,9 +76,10 @@
         ]
       },
       {
-        title: '第一の試練について',
+        
         blocks: [
           {
+            title: '第一の試練について',
             tokens: [
               '第一の試練の際にみた映像を思い出してみると、\n',
               'アンドロイドは０・２・４・６・８の数字カードのうち、\n',
@@ -129,92 +130,106 @@
           {
             title: '情報ボックスCについて',
             tokens: [
-              '・相手の会場の実験室には、チーズが置いてある。\n\n',
+              '・相手の会場の実験室には、チーズが置いてある。\n',
               '・２つの会場にある実験室・保管庫にあるアイテムは、\n',
-              '数字のパネルをのぞいて全て', T.choice('itemsSame', ['同じである', '異なる'], 16), '。\n\n',
-              '・保管庫にあるモノは、ダスシステムでしか手に入れられない。\n\n',
-              '・', T.text('onlyItem', 'あああ', 12), 'を呼び出すことができる謎は謎',
-              T.text('onlyPuzzle', 'あああ', 8), 'しかない。\n',
-              '謎', T.text('onlyPuzzle2', 'あああ', 8), 'の答えから指定できる素材は',
-              T.text('onlyMaterial', 'あああ', 12), 'しかない。\n\n',
+              '数字のパネルをのぞいて全て', T.choice('itemsSame', { options: ['同じである', '異なる'], size: 16, placeholder: '' }), '。\n',
+              '・保管庫にあるモノは、ダスシステムでしか手に入れられない。\n',
+              '・', T.text('onlyItem', { solution: 'あああ', placeholder: '', size: 12 }), 'を呼び出すことができる謎は謎',
+              T.text('onlyPuzzle', { solution: 'あああ', placeholder: '', size: 8 }), 'しかない。\n',
+              '謎', T.text('onlyPuzzle2', { solution: 'あああ', placeholder: '', size: 8 }), 'の答えから指定できる素材は',
+              T.text('onlyMaterial', { solution: 'あああ', placeholder: '', size: 12 }), 'しかない。\n',
               '・アンドロイドは第三の試練をクリアしているので、\n',
-              '情報ボックスCのパスワードを突き止めて', T.choice('foundPw', ['いる', 'いない'], 8), '。\n\n'
+              '情報ボックスCのパスワードを突き止めて', T.choice('foundPw', { options: ['いる', 'いない'], size: 8, placeholder: '' }), '。\n'
             ]
-          },
+          }
+        ],
+      },
+      {
+        title: '結論',
+        blocks: [
           {
-            title: '結論',
             tokens: [
-              'アンドロイドは', T.text('notCall', 'あああ', 12), 'を呼び出さずにパスワードを突き止めている。'
+              'アンドロイドは', T.text('notCall', { solution: 'あああ', placeholder: '', size: 12 }), 'を呼び出さずにパスワードを突き止めている。'
             ]
           }
         ]
       },
       {
-        title: '情報ボックスCの謎について',
+        
         blocks: [
           {
+            title: '情報ボックスCの謎について',
             tokens: [
               '情報ボックスCを開けるための謎を解き明かすと、\n',
               'ダスシステムでアイテムを呼び出す指示が現れる。\n',
-              'プレイヤーは謎を解いた結果、', T.text('playerAns', 'あああ', 10), 'という答えを導いた。\n\n',
-              'アンドロイドが', T.text('playerAns_ref', 'あああ', 10), 'を呼び出していないということは、\n',
-              '別のアイテムXを呼び出す指示が現れたと推測することができる。\n\n',
+              'プレイヤーは謎を解いた結果、', T.text('playerAns', { solution: 'あああ', placeholder: '', size: 10 }), 'という答えを導いた。\n',
+              'アンドロイドが', T.text('playerAns_ref', { solution: 'あああ', placeholder: '', size: 10 }), 'を呼び出していないということは、\n',
+              '別のアイテムXを呼び出す指示が現れたと推測することができる。\n',
               'この推測が正しいとすれば、\n',
               'アンドロイドはアイテムXを呼び出しても、\n',
-              'パスワードを突き止められる状況になったと考えられる。\n\n',
+              'パスワードを突き止められる状況になったと考えられる。\n',
               '保管庫の様子を確認すると、\n',
-              '次のような手順であれば、パスワードを突き止められる。\n\n'
+              '次のような手順であれば、パスワードを突き止められる。\n'
             ]
           },
           {
             tokens: [
               '＜謎を解いた後のアンドロイドの行動＞\n',
               '①情報ボックスCを開けるための謎を解き明かして、\n',
-              T.text('callX', 'あああ', 12), 'を呼び出す指示が現れる。\n',
-              '②ダスシステムで、素材', T.text('matX', 'あああ', 10), 'を使って',
-              T.text('itemX', 'あああ', 12), 'を呼び出す。\n',
-              '③', T.choice('whereSee', ['保管庫', '実験室'], 10), 'にある',
-              T.text('seeWhat', 'あああ', 10), 'をみる。\n\n'
+              T.text('callX', { solution: 'あああ', placeholder: '', size: 12 }), 'を呼び出す指示が現れる。\n',
+              '②ダスシステムで、素材', T.text('matX', { solution: 'あああ', placeholder: '', size: 10 }), 'を使って',
+              T.text('itemX', { solution: 'あああ', placeholder: '', size: 12 }), 'を呼び出す。\n',
+              '③', T.choice('whereSee', { options: ['保管庫', '実験室'], size: 10, placeholder: '' }), 'にある',
+              T.text('seeWhat', { solution: 'あああ', placeholder: '', size: 10 }), 'をみる。\n'
             ]
-          },
+          }
+        ],
+      },
+      {
+        title: '結論',
+        blocks: [
           {
-            title: '結論',
             tokens: [
               'アンドロイドは、情報ボックスCを開けるための謎を解き明かして、\n',
-              T.text('calledFinally', 'あああ', 12), 'を呼び出した。'
+              T.text('calledFinally', { solution: 'あああ', placeholder: '', size: 12 }), 'を呼び出した。'
             ]
           }
         ]
       },
       {
-        title: '情報ボックスCを開けるための謎について',
+        
+        blocks: [
+          {
+            title: '情報ボックスCを開けるための謎について',
+            tokens: [
+              '謎の答えが、', T.text('answerA', { solution: 'あああ', placeholder: '', size: 10 }), 'ではなく',
+              T.text('answerB', { solution: 'あああ', placeholder: '', size: 14 }), 'になったということは、プレイヤーとアンドロイドで解き方が',
+              T.choice('solveSame', { options: ['同じである', '異なる'], size: 14, placeholder: '' }), '。\n',
+              '謎５〜謎８の答えは、コクヨウセキ/シュウジン/チーズケーキ/スキャンで正しいので、\n',
+              '答えが示す４箇所の場所にある指示は正しい。\n',
+              'つまり、プレイヤーが導き出した', T.text('playerAnsAgain', { solution: 'あああ', placeholder: '', size: 10 }), 'という答えと異なる答えを導くためには、\n',
+              '４箇所の場所にある指示を無視するしかない。\n',
+              '見つけ出した指示は３つある。\n',
+              'この中で、その指示を無視することでアンドロイドが導き出した\n',
+              T.text('androidAns', { solution: 'あああ', placeholder: '', size: 14 }), 'という答えになる指示は、指示',
+              T.text('whichInstr', { solution: 'あああ', placeholder: '', size: 8 }), 'である。\n',
+              'この指示', T.text('whichInstr2', { solution: 'あああ', placeholder: '', size: 8 }), 'は、',
+              T.text('instrBy', { solution: 'あああ', placeholder: '', size: 12 }), 'による指示である。\n',
+              'アンドロイドの情報によると、\n',
+              'アンドロイドの五感は人間と', T.choice('senseSame', { options: ['同じである', '異なる'], size: 14, placeholder: '' }), 'ことがわかる。\n',
+              'プレイヤーはこの指示を問題なく知覚できたことから、\n',
+              'アンドロイドは指示', T.text('whichInstr3', { solution: 'あああ', placeholder: '', size: 8 }), 'を知覚',
+              T.choice('couldSense', { options: ['できた', 'できなかった'], size: 16, placeholder: '' }), 'と推測できる。\n'
+            ]
+          }
+        ],
+      },
+      {
+        title: '結論',
         blocks: [
           {
             tokens: [
-              '謎の答えが、', T.text('answerA', 'あああ', 10), 'ではなく',
-              T.text('answerB', 'あああ', 14), 'になったということは、プレイヤーとアンドロイドで解き方が',
-              T.choice('solveSame', ['同じである', '異なる'], 14), '。\n\n',
-              '謎５〜謎８の答えは、コクヨウセキ/シュウジン/チーズケーキ/スキャンで正しいので、\n',
-              '答えが示す４箇所の場所にある指示は正しい。\n\n',
-              'つまり、プレイヤーが導き出した', T.text('playerAnsAgain', 'あああ', 10), 'という答えと異なる答えを導くためには、\n',
-              '４箇所の場所にある指示を無視するしかない。\n\n',
-              '見つけ出した指示は３つある。\n',
-              'この中で、その指示を無視することでアンドロイドが導き出した\n',
-              T.text('androidAns', 'あああ', 14), 'という答えになる指示は、指示',
-              T.text('whichInstr', 'あああ', 8), 'である。\n\n',
-              'この指示', T.text('whichInstr2', 'あああ', 8), 'は、',
-              T.text('instrBy', 'あああ', 12), 'による指示である。\n\n',
-              'アンドロイドの情報によると、\n',
-              'アンドロイドの五感は人間と', T.choice('senseSame', ['同じである', '異なる'], 14), 'ことがわかる。\n',
-              'プレイヤーはこの指示を問題なく知覚できたことから、\n',
-              'アンドロイドは指示', T.text('whichInstr3', 'あああ', 8), 'を知覚',
-              T.choice('couldSense', ['できた', 'できなかった'], 16), 'と推測できる。\n\n'
-            ]
-          },
-          {
-            title: '結論',
-            tokens: [
-              'アンドロイドは、', T.text('notPerceive', 'あああ', 12), 'が知覚できない環境にいる。'
+              'アンドロイドは、', T.text('notPerceive', { solution: 'あああ', placeholder: '', size: 12 }), 'が知覚できない環境にいる。'
             ]
           }
         ]
