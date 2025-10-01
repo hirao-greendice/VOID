@@ -53,7 +53,8 @@ main { padding: 18px; }
 
 /* A4 page */
 .a4 {
-  width: 210mm;
+  /* Keep A4 layout on wide screens, but shrink on small viewports */
+  width: min(100%, 210mm);
   min-height: 297mm;
   margin: 0 auto;
   background:
@@ -148,4 +149,27 @@ main { padding: 18px; }
   .topbar, .footer { display: none; }
   body { background: #fff; }
   .a4 { box-shadow: none; margin: 0; border: none; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  main { padding: 12px; }
+  .topbar { padding: 8px 10px; }
+  .controls { flex-wrap: wrap; row-gap: 6px; }
+  .a4 { min-height: auto; padding: 16px 12px; }
+  .title { font-size: 34px; }
+  .subtitle { font-size: 22px; }
+  .section-title { font-size: 18px; }
+  .paragraph { font-size: 15px; line-height: 2; }
+  .blank { margin: 0 1px; }
+  .blank-input, .blank-select { max-width: 100%; }
+}
+
+@media (max-width: 480px) {
+  main { padding: 10px; }
+  .title { font-size: 28px; }
+  .subtitle { font-size: 18px; }
+  .section-title { font-size: 16px; }
+  .paragraph { font-size: 14px; line-height: 1.9; }
+  .controls { gap: 6px; }
 }
