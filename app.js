@@ -247,6 +247,153 @@
       hotspot.addEventListener('pointerdown', onTap);
       hotspot.addEventListener('click', onTap);
     }
+
+    // --- On-screen Kana Keyboard (bottom sheet) ---
+    (function setupIME(){
+      const baseBodyPadBottom = (() => { try { return parseFloat(getComputedStyle(document.body).paddingBottom) || 0; } catch { return 0; } })();
+      const kanaColumns = ['ん','わ','ら','や','ま','は','な','た','さ','か','あ'];
+      const rows = [
+        // rows correspond to vowels あ/い/う/え/お, with blanks where not applicable
+        ['ん','わ','ら','や','ま','は','な','た','さ','か','あ'],
+        ['',  '', 'り','',  'み','ひ','に','ち','し','き','い'],
+        ['',  '', 'る','ゆ','む','ふ','ぬ','つ','す','く','う'],
+        ['',  '', 'れ','',  'め','へ','ね','て','せ','け','え'],
+        ['',  'を','ろ','よ','も','ほ','の','と','そ','こ','お'],
+      ];
+
+      const smallMap = { 'あ':'ぁ','い':'ぃ','う':'ぅ','え':'ぇ','お':'ぉ','つ':'っ','や':'ゃ','ゆ':'ゅ','よ':'ょ','わ':'ゎ' };
+      const dakutenMap = { 'か':'が','き':'ぎ','く':'ぐ','け':'げ','こ':'ご','さ':'ざ','し':'じ','す':'ず','せ':'ぜ','そ':'ぞ','た':'だ','ち':'ぢ','つ':'づ','て':'で','と':'ど','は':'ば','ひ':'び','ふ':'ぶ','へ':'べ','ほ':'ぼ','う':'ゔ' };
+      const handakuMap = { 'は':'ぱ','ひ':'ぴ','ふ':'ぷ','へ':'ぺ','ほ':'ぽ' };
+
+      let imeEl = document.getElementById('imeKeyboard');
+      if (!imeEl) {
+        imeEl = document.createElement('div');
+        imeEl.id = 'imeKeyboard';
+        const title = document.createElement('div'); title.className = 'ime-title'; title.textContent = '五十音キーボード';
+        const wrap = document.createElement('div'); wrap.className = 'ime-wrap';
+
+        // left side tools (vertical)
+        const side = document.createElement('div'); side.className = 'ime-side';
+        const sideDefs = [
+          { id: 'dakuten', label: '゛', title: '濁点' },
+          { id: 'handaku', label: '゜', title: '半濁点' },
+          { id: 'small', label: '小', title: '小文字' },
+          { id: 'choon', label: 'ー', title: '長音' },
+          { id: 'back', label: '削除', title: '削除' },
+        ];
+        sideDefs.forEach((d) => { const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'ime-tool' + (d.toggle ? ' toggle' : ''); bt.dataset.action = d.id; bt.textContent = d.label; if (d.title) bt.title = d.title; side.appendChild(bt); });
+
+        // main grid
+        const grid = document.createElement('div'); grid.className = 'ime-grid';
+        rows.forEach((row) => {
+          row.forEach((ch) => {
+            const b = document.createElement('button'); b.type = 'button'; b.className = 'ime-key';
+            if (!ch) { b.disabled = true; b.textContent = ''; }
+            else { b.textContent = ch; b.dataset.char = ch; }
+            grid.appendChild(b);
+          });
+        });
+
+        wrap.appendChild(side);
+        wrap.appendChild(grid);
+
+        // bottom tools (close only)
+        const bottom = document.createElement('div'); bottom.className = 'ime-bottom';
+        const close = document.createElement('button'); close.type = 'button'; close.className = 'ime-tool'; close.dataset.action = 'close'; close.textContent = '閉じる';
+        bottom.appendChild(close);
+
+        imeEl.appendChild(title); imeEl.appendChild(wrap); imeEl.appendChild(bottom); document.body.appendChild(imeEl);
+      }
+
+      let activeInput = null;
+
+      let smallRevMap = null;
+      let smallReg = null;
+      function ensureAboveIME(input){
+        if (!input) return;
+        try {
+          const doCalc = () => {
+            const kb = imeEl.getBoundingClientRect();
+            const r = input.getBoundingClientRect();
+            const margin = 16;
+            const safeBottom = kb.top - margin; // last visible y for input bottom
+            const overlap = r.bottom - safeBottom;
+            if (overlap > 0) {
+              window.scrollBy({ top: overlap, left: 0, behavior: 'smooth' });
+            }
+          };
+          requestAnimationFrame(doCalc);
+          setTimeout(doCalc, 260); // run again after slide-up animation
+        } catch {}
+      }
+      function applyBottomInset(){
+        try {
+          const h = imeEl.offsetHeight || imeEl.getBoundingClientRect().height || 0;
+          document.body.style.paddingBottom = (baseBodyPadBottom + h + 16) + 'px';
+        } catch {}
+      }
+      function clearBottomInset(){ try { document.body.style.paddingBottom = ''; } catch {} }
+      function showIME(input){ activeInput = input; imeEl.classList.add('visible'); requestAnimationFrame(() => { applyBottomInset(); ensureAboveIME(input); setTimeout(() => { applyBottomInset(); ensureAboveIME(input); }, 260); }); }
+      function hideIME(){ imeEl.classList.remove('visible'); activeInput = null; clearBottomInset(); const sm = imeEl.querySelector('.ime-tool.toggle'); if (sm) sm.classList.remove('active'); }
+
+      function commitInputChanged(input){ try { input.dispatchEvent(new Event('input', { bubbles: true })); } catch { input.dispatchEvent(new Event('input')); } }
+      function insertText(input, text){ if (!input) return; const s = input.selectionStart ?? input.value.length; const e = input.selectionEnd ?? s; const before = input.value.slice(0, s); const after = input.value.slice(e); input.value = before + text + after; const pos = s + text.length; try { input.setSelectionRange(pos, pos); } catch {} commitInputChanged(input); }
+      function replacePrevCharWith(input, nextChar){ if (!input) return; const s = input.selectionStart ?? input.value.length; if (s <= 0) return; const before = input.value.slice(0, s-1); const after = input.value.slice(s); input.value = before + nextChar + after; const pos = (s-1) + nextChar.length; try { input.setSelectionRange(pos, pos); } catch {} commitInputChanged(input); }
+
+      function applyDakuten(input){ const s = input.selectionStart ?? input.value.length; if (s <= 0) return; const prev = input.value.charAt(s-1); const rep = dakutenMap[prev]; if (rep) { replacePrevCharWith(input, rep); } }
+      function applyHandakuten(input){ const s = input.selectionStart ?? input.value.length; if (s <= 0) return; const prev = input.value.charAt(s-1); const rep = handakuMap[prev]; if (rep) { replacePrevCharWith(input, rep); } }
+      function applySmall(input){ const s = input.selectionStart ?? input.value.length; if (s <= 0) return; const prev = input.value.charAt(s-1); if (!smallRevMap) { smallRevMap = {}; Object.keys(smallMap).forEach(k => { smallRevMap[smallMap[k]] = k; }); smallReg = new RegExp('[' + Object.keys(smallRevMap).join('') + ']'); }
+        if (smallMap[prev]) { replacePrevCharWith(input, smallMap[prev]); return; }
+        if (smallRevMap[prev]) { replacePrevCharWith(input, smallRevMap[prev]); return; }
+      }
+
+      imeEl.addEventListener('click', (e) => {
+        const t = e.target;
+        if (!(t instanceof HTMLElement)) return;
+        const char = t.dataset && t.dataset.char;
+        const act = t.dataset && t.dataset.action;
+        if (!activeInput) return;
+        // Ensure input keeps focus
+        try { activeInput.focus(); } catch {}
+        if (char) {
+          insertText(activeInput, char);
+          return;
+        }
+        if (act) {
+          if (act === 'dakuten') { applyDakuten(activeInput); return; }
+          if (act === 'handaku') { applyHandakuten(activeInput); return; }
+          if (act === 'small') { applySmall(activeInput); return; }
+          if (act === 'choon') { insertText(activeInput, 'ー'); return; }
+          if (act === 'back') {
+            const s = activeInput.selectionStart ?? activeInput.value.length; const e2 = activeInput.selectionEnd ?? s; if (s === e2 && s > 0) { activeInput.setSelectionRange(s-1, e2); }
+            insertText(activeInput, ''); return;
+          }
+          if (act === 'close') { hideIME(); return; }
+        }
+      });
+
+      // show/hide behavior
+      page.addEventListener('pointerdown', (e) => {
+        const t = e.target;
+        const isInput = t && t.classList && t.classList.contains('blank-input');
+        if (isInput && !t.readOnly) { showIME(t); } else {
+          // hide if clicking outside inputs and outside keyboard
+          const path = e.composedPath ? e.composedPath() : [];
+          if (!(t && (imeEl.contains(t) || (t.classList && t.classList.contains('blank-input')))) && !path.includes(imeEl)) {
+            hideIME();
+          }
+        }
+      });
+      // Also hide when tapping outside on the document
+      document.addEventListener('pointerdown', (e) => {
+        if (!imeEl.classList.contains('visible')) return;
+        const t = e.target;
+        if (t && (imeEl.contains(t) || (t.classList && t.classList.contains('blank-input')))) return;
+        hideIME();
+      }, true);
+      document.addEventListener('focusin', (e) => { const t = e.target; if (t && t.classList && t.classList.contains('blank-input') && !t.readOnly) { showIME(t); } });
+      window.addEventListener('resize', () => { if (imeEl.classList.contains('visible')) { applyBottomInset(); if (activeInput) ensureAboveIME(activeInput); } });
+    })();
   }
 
   document.addEventListener('DOMContentLoaded', init);

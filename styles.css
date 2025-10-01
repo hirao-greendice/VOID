@@ -14,6 +14,7 @@ body {
   font-family: "Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", "MS Mincho", serif;
   color: var(--ink);
   background: #f4f6f8;
+  padding-bottom: 300px; /* page bottom spacer */
 }
 
 .topbar {
@@ -71,6 +72,7 @@ main { padding: 18px; }
   width: min(100%, 210mm);
   min-height: 297mm;
   margin: 0 auto;
+  margin-bottom: 400px;
   background:
     radial-gradient(#b9d8ff 0.5px, transparent 0.5px) 0 0/12px 12px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
@@ -161,7 +163,7 @@ main { padding: 18px; }
 
 @media print {
   .topbar, .footer { display: none; }
-  body { background: #fff; }
+  body { background: #fff; padding-bottom: 0 !important; }
   .a4 { box-shadow: none; margin: 0; border: none; }
 }
 
@@ -186,4 +188,66 @@ main { padding: 18px; }
   .section-title { font-size: 16px; }
   .paragraph { font-size: 14px; line-height: 1.9; }
   .controls { gap: 6px; }
+}
+
+/* On-screen Kana Keyboard (bottom sheet) */
+#imeKeyboard {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: #ffffff;
+  border-top: 1px solid #e5eaf0;
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.12);
+  transform: translateY(100%);
+  transition: transform 220ms ease-out, opacity 220ms ease-out;
+  opacity: 0.98;
+  padding: 10px 12px 12px;
+  max-height: 60vh;
+  overflow: auto;
+}
+#imeKeyboard.visible { transform: translateY(0); }
+#imeKeyboard .ime-title { font-size: 14px; color: #667; margin: 0 0 6px; text-align: center; }
+#imeKeyboard { --ime-cell: clamp(29px, 4.6vw, 44px); }
+#imeKeyboard .ime-wrap { display: grid; grid-template-columns: calc(var(--ime-cell) + 6px) auto; gap: 10px; align-items: start; justify-content: center; margin: 0 auto; }
+#imeKeyboard .ime-grid { display: grid; grid-template-columns: repeat(11, var(--ime-cell)); grid-auto-rows: var(--ime-cell); gap: 6px; margin: 0 auto; }
+#imeKeyboard .ime-key {
+  user-select: none;
+  -webkit-user-select: none;
+  appearance: none;
+  border: 1px solid #c8d1dc;
+  background: #fff;
+  border-radius: 8px;
+  padding: 0;
+  font-size: calc(var(--ime-cell) * 0.6);
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ime-cell);
+  height: var(--ime-cell);
+}
+#imeKeyboard .ime-key:active { background: #f2f6ff; border-color: var(--accent); }
+#imeKeyboard .ime-key[disabled] { opacity: .35; cursor: default; background: #f6f8fb; }
+#imeKeyboard .ime-side { display: grid; grid-auto-rows: var(--ime-cell); grid-template-rows: repeat(5, var(--ime-cell)); gap: 8px; }
+#imeKeyboard .ime-bottom { display: grid; grid-template-columns: auto; justify-content: end; gap: 8px; margin-top: 10px; }
+#imeKeyboard .ime-tool {
+  appearance: none;
+  border: 1px solid #c8d1dc;
+  background: #f7fbff;
+  border-radius: 10px;
+  padding: 0;
+  font-size: calc(var(--ime-cell) * 0.5);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  width: var(--ime-cell);
+  height: var(--ime-cell);
+}
+#imeKeyboard .ime-tool.toggle.active { background: #e7f0ff; border-color: var(--accent); }
+
+@media print {
+  #imeKeyboard { display: none !important; }
 }
