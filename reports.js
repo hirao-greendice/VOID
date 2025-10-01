@@ -3,11 +3,30 @@
 
 (function () {
   const T = {
-    text: (id, placeholder = 'あああ', size) => ({ kind: 'text', id, placeholder, size }),
-    choice: (id, options, size) => ({ kind: 'choice', id, options, size })
+    // text(id, placeholder?, size?) OR text(id, {solution?, placeholder?, size?})
+    text: (id, a, b, c) => {
+      if (typeof a === 'object' && a !== null && !Array.isArray(a)) {
+        const { solution = '', placeholder = '', size } = a;
+        return { kind: 'text', id, solution, placeholder, size };
+      } else {
+        const placeholder = a || '';
+        const size = b;
+        const solution = c || undefined;
+        return { kind: 'text', id, solution, placeholder, size };
+      }
+    },
+    // choice(id, options, size?, placeholder?, solution?) OR choice(id, {options, size?, placeholder?, solution?})
+    choice: (id, a, b, c, d) => {
+      if (Array.isArray(a)) {
+        return { kind: 'choice', id, options: a, size: b, placeholder: c, solution: d };
+      } else {
+        const { options = [], size, placeholder = undefined, solution = undefined } = a || {};
+        return { kind: 'choice', id, options, size, placeholder, solution };
+      }
+    }
   };
 
-  // 〜カメラについて〜（既存）
+  // 〜カメラについて〜
   const cameraReport = {
     id: 'camera',
     name: '違和感レポート 〜カメラについて〜',
@@ -22,24 +41,27 @@
             tokens: [
               '情報ボックスBを以下の方法で開けた。\n',
               '①', T.choice('method', ['ダスシステム', 'ヌルシステム'], 20), 'で、素材「',
-              T.text('material', 'レンガ', 10), '」を使って\n　「',
-              T.text('cardS', 'S', 2), '」のカードの「',
-              T.text('fromColor', '青', 4), '」色を「',
-              T.text('toColor', '赤', 4), '」色に変えた。\n',
-              '②向きを変えた「', T.text('cardN', 'N', 2), '」/色を変えた「',
-              T.text('cardS2', 'S', 2), '」/「', T.text('cardE', 'E', 2), '」のカードに、\n　',
-              '情報ボックス', '（', T.choice('boxWhich', ['A', 'B'], 4), '）',
-              'の謎で使用した「', T.text('ni', 'ニ', 2), '」「', T.text('tsu', 'ッ', 2), '」「',
-              T.text('ko', 'コ', 2), '」の\n　「', T.text('sheet', '透明シート', 16), '」を重ねて、',
-              T.text('knot', 'ノット', 10), 'を示した。'
+              T.text('material', { solution: 'レンガ', size: 12, placeholder: '' }), '」を使って\n　「',
+              T.choice('cardS', { options: ['A','N','S','W','E','R'], size: 10, placeholder: '', solution: 'S' }), '」のカードの「',
+              T.text('fromColor', { solution: '青', size: 6, placeholder: '' }), '」色を「',
+              T.text('toColor', { solution: '赤', size: 6, placeholder: '' }), '」色に変えた。\n',
+              '②向きを変えた「', T.choice('cardN', { options: ['A','N','S','W','E','R'], size: 10, placeholder: '', solution: 'N' }), '」/色を変えた「',
+              T.choice('cardS2', { options: ['A','N','S','W','E','R'], size: 10, placeholder: '', solution: 'S' }), '」/「',
+              T.choice('cardE', { options: ['A','N','S','W','E','R'], size: 10, placeholder: '', solution: 'E' }), '」のカードに、\n　',
+              '情報ボックス', T.choice('boxWhich', ['A', 'B'], 6), 'の謎で使用した「',
+              T.text('ni', { solution: 'ニ', size: 4, placeholder: '' }), '」「',
+              T.text('tsu', { solution: 'ッ', size: 4, placeholder: '' }), '」「',
+              T.text('ko', { solution: 'コ', size: 4, placeholder: '' }), '」の\n　「',
+              T.text('sheet', { solution: '透明シート', size: 18, placeholder: '' }), '」を重ねて、',
+              T.text('knot', { solution: 'ノット', size: 12, placeholder: '' }), 'を示した。'
             ]
           },
           {
             tokens: [
               '\nつまり、判定カメラは',
-              '（', T.choice('judge1', ['カードそのもの', 'カードに書かれた文字'], 22), '）',
+              T.choice('judge1', ['カードそのもの', 'カードに書かれた文字'], 22),
               'ではなく',
-              '（', T.choice('judge2', ['カードそのもの', 'カードに書かれた文字'], 22), '）',
+              T.choice('judge2', ['カードそのもの', 'カードに書かれた文字'], 22),
               'を判定している。'
             ]
           }
@@ -58,17 +80,16 @@
           {
             tokens: [
               'ところで、この会場にある判定カメラは全て',
-              '（', T.choice('sameOrDiff', ['同じ', '異なる'], 10), '）', 'なので\n',
-              '「６」の', '（', T.choice('sixChange', ['向き', '色'], 6), '）',
-              'を変えて８よりも大きい数「９」を示すことができる。\n',
+              T.choice('sameOrDiff', ['同じ', '異なる'], 10), 'なので\n',
+              '「６」の', T.choice('sixChange', ['向き', '色'], 6), 'を変えて８よりも大きい数「９」を示すことができる。\n',
               'しかし、アンドロイドは「８」を提出したにもかかわらず、\n',
-              '第一の試練に', '（', T.choice('result', ['敗北している', '敗北していない'], 18), '）', '。'
+              '第一の試練に', T.choice('result', ['敗北している', '敗北していない'], 18), '。'
             ]
           },
           {
             tokens: [
               '\nつまり、アンドロイドは「８」を使って最も',
-              '（', T.choice('bigSmall', ['大きい', '小さい'], 10), '）',
+              T.choice('bigSmall', ['大きい', '小さい'], 10),
               '数を示していることがわかる。'
             ]
           }
@@ -79,8 +100,7 @@
         blocks: [
           {
             tokens: [
-              'アンドロイドは、「８」の', '（', T.choice('infty', ['向き', '色'], 6), '）',
-              'を変えて「∞」を示した。'
+              'アンドロイドは、「８」の', T.choice('infty', ['向き', '色'], 6), 'を変えて「∞」を示した。'
             ]
           }
         ]
@@ -88,7 +108,7 @@
     ]
   };
 
-  // 〜チーズについて〜（新規）
+  // 〜チーズについて〜
   const cheeseReport = {
     id: 'cheese',
     name: '違和感レポート 〜チーズについて〜',
@@ -103,14 +123,14 @@
             tokens: [
               '・相手の会場の実験室には、チーズが置いてある。\n\n',
               '・２つの会場にある実験室・保管庫にあるアイテムは、\n',
-              '数字のパネルをのぞいて全て', '（', T.choice('itemsSame', ['同じである', '異なる'], 16), '）', '。\n\n',
+              '数字のパネルをのぞいて全て', T.choice('itemsSame', ['同じである', '異なる'], 16), '。\n\n',
               '・保管庫にあるモノは、ダスシステムでしか手に入れられない。\n\n',
               '・「', T.text('onlyItem', 'あああ', 12), '」を呼び出すことができる謎は謎「',
               T.text('onlyPuzzle', 'あああ', 8), '」しかない。\n',
               '謎「', T.text('onlyPuzzle2', 'あああ', 8), '」の答えから指定できる素材は「',
               T.text('onlyMaterial', 'あああ', 12), '」しかない。\n\n',
               '・アンドロイドは第三の試練をクリアしているので、\n',
-              '情報ボックスCのパスワードを突き止めて', '（', T.choice('foundPw', ['いる', 'いない'], 8), '）', '。\n\n'
+              '情報ボックスCのパスワードを突き止めて', T.choice('foundPw', ['いる', 'いない'], 8), '。\n\n'
             ]
           },
           {
@@ -145,7 +165,7 @@
               '「', T.text('callX', 'あああ', 12), '」を呼び出す指示が現れる。\n',
               '②ダスシステムで、素材「', T.text('matX', 'あああ', 10), '」を使って「',
               T.text('itemX', 'あああ', 12), '」を呼び出す。\n',
-              '③', '（', T.choice('whereSee', ['保管庫', '実験室'], 10), '）', 'にある「',
+              '③', T.choice('whereSee', ['保管庫', '実験室'], 10), 'にある「',
               T.text('seeWhat', 'あああ', 10), '」をみる。\n\n'
             ]
           },
@@ -165,7 +185,7 @@
             tokens: [
               '謎の答えが、「', T.text('answerA', 'あああ', 10), '」ではなく「',
               T.text('answerB', 'あああ', 14), '」になったということは、プレイヤーとアンドロイドで解き方が',
-              '（', T.choice('solveSame', ['同じである', '異なる'], 14), '）', '。\n\n',
+              T.choice('solveSame', ['同じである', '異なる'], 14), '。\n\n',
               '謎５〜謎８の答えは、コクヨウセキ/シュウジン/チーズケーキ/スキャンで正しいので、\n',
               '答えが示す４箇所の場所にある指示は正しい。\n\n',
               'つまり、プレイヤーが導き出した「', T.text('playerAnsAgain', 'あああ', 10), '」という答えと異なる答えを導くためには、\n',
@@ -177,10 +197,10 @@
               'この指示「', T.text('whichInstr2', 'あああ', 8), '」は、「',
               T.text('instrBy', 'あああ', 12), '」による指示である。\n\n',
               'アンドロイドの情報によると、\n',
-              'アンドロイドの五感は人間と', '（', T.choice('senseSame', ['同じである', '異なる'], 14), '）', 'ことがわかる。\n',
+              'アンドロイドの五感は人間と', T.choice('senseSame', ['同じである', '異なる'], 14), 'ことがわかる。\n',
               'プレイヤーはこの指示を問題なく知覚できたことから、\n',
               'アンドロイドは指示「', T.text('whichInstr3', 'あああ', 8), '」を知覚',
-              '（', T.choice('couldSense', ['できた', 'できなかった'], 16), '）', 'と推測できる。\n\n'
+              T.choice('couldSense', ['できた', 'できなかった'], 16), 'と推測できる。\n\n'
             ]
           },
           {
@@ -194,7 +214,5 @@
     ]
   };
 
-  // ここにレポートを追加
   window.reports = [cameraReport, cheeseReport];
 })();
-
