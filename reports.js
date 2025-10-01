@@ -77,9 +77,9 @@
             tokens: [
               T.choice('judge1', ['カードそのもの', '文字'], 22),
               'はカードの',
-              T.text('ni', { solution: '色', size: 8, placeholder: '' }), 'や ',
-              T.text('tsu', { solution: '向き', size: 8, placeholder: '' }), 'の変更をしたり、\n',
-              T.text('ko', { solution: '透明シート', size: 18, placeholder: '' }), 'を重ねたりしても問題なく判定される。'
+              T.text('nin56', { solution: '色', size: 8, placeholder: '' }), 'や ',
+              T.text('tsuwe', { solution: '向き', size: 8, placeholder: '' }), 'の変更をしたり、\n',
+              T.text('ko123', { solution: '透明シート', size: 18, placeholder: '' }), 'を重ねたりしても問題なく判定される。'
             ]
           }
         ]
@@ -100,16 +100,16 @@
               'ところで、この会場にある判定カメラは全て',
               T.choice('sameOrDiff', ['同じ', '異なる'], 10), 'ため、\n先ほど判明した判定カメラの性質から、\n',
               '「6」の', T.choice('sixChange', ['向き', '色'], 6), 'を変えて８よりも大きい数',
-              T.text('number', { solution: '9', size: 4, placeholder: '' }),'を示すことができる。\n',
+              T.text('number9', { solution: '9', size: 4, placeholder: '' }),'を示すことができる。\n',
               'しかし、アンドロイドは',
-              T.text('number', { solution: '8', size: 4, placeholder: '' }),'を提出したにもかかわらず、\n',
+              T.text('number8', { solution: '8', size: 4, placeholder: '' }),'を提出したにもかかわらず、\n',
               '第一の試練に', T.choice('result', ['敗北している', '敗北していない'], 18), '。'
             ]
           },
           {
             tokens: [
               '\nつまり、アンドロイドは',
-              T.text('number', { solution: '8', size: 4, placeholder: '' }),'を使って最も',
+              T.text('number8', { solution: '8', size: 4, placeholder: '' }),'を使って最も',
               T.choice('bigSmall', ['大きい', '小さい'], 10),
               '数を示していることがわかる。'
             ]
@@ -122,7 +122,7 @@
           {
             tokens: [
                 'アンドロイドは、',
-              T.text('number', { solution: '8', size: 4, placeholder: '' }),'の', T.choice('infty', ['向き', '色'], 6), 'を変えて',
+              T.text('number8', { solution: '8', size: 4, placeholder: '' }),'の', T.choice('infty', ['向き', '色'], 6), 'を変えて',
               T.text('number', { solution: '∞', size: 4, placeholder: '' }),'を示した。'
             ]
           }
