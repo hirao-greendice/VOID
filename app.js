@@ -47,6 +47,40 @@
     });
   }
 
+  // Link helpers: keep fields with same linkKey in sync
+  function propagateLinkedValue(linkKey, value, sourceEl) {
+    if (!linkKey) return;
+    const others = page.querySelectorAll('[data-link-key="' + linkKey + '"]');
+    others.forEach((el) => {
+      if (el === sourceEl) return;
+      const tag = (el.tagName || '').toUpperCase();
+      if (tag === 'INPUT') {
+        const baseText = el.placeholder || '';
+        el.value = value || '';
+        try { applyExactPixelWidth(el, el.value || baseText); } catch {}
+      } else if (tag === 'SELECT') {
+        const v = String(value || '');
+        const found = Array.from(el.options).some((o) => String(o.value || o.text || '') === v);
+        if (found) { el.value = v; }
+        const placeholder = el.dataset.placeholder || (el.options[0]?.text || '');
+        const currentText = el.options[el.selectedIndex]?.text || placeholder;
+        try { applyExactPixelWidth(el, currentText, 18); } catch {}
+      }
+    });
+  }
+
+  function unifyLinkedAfterRender() {
+    const all = Array.from(page.querySelectorAll('[data-link-key]'));
+    const firstNonEmpty = new Map();
+    all.forEach((el) => {
+      const key = el.dataset.linkKey;
+      if (!key) return;
+      const val = (el.value || '').toString();
+      if (val && !firstNonEmpty.has(key)) firstNonEmpty.set(key, val);
+    });
+    firstNonEmpty.forEach((val, key) => propagateLinkedValue(key, val, null));
+  }
+
   function renderTokens(container, tokens, answers, reportId, options = {}) {
     const useSolutions = !!options.showSolutions;
     const DEFAULT_SCALE = 2;
@@ -58,6 +92,7 @@
         input.placeholder = t.placeholder || '';
         if (t.placeholder) input.setAttribute('title', `例: ${t.placeholder}`);
         input.dataset.fieldId = t.id;
+        input.dataset.linkKey = (t.link || t.id);
         input.value = useSolutions ? (t.solution ?? '') : (answers[t.id] || '');
         const baseRaw = t.size != null ? t.size : (t.placeholder ? displayWidth(t.placeholder) : 6) * DEFAULT_SCALE;
         setChWidth(input, baseRaw);
@@ -70,7 +105,7 @@
       }
       if (t.kind === 'choice') {
         const wrap = document.createElement('span'); wrap.className = 'blank';
-        const sel = document.createElement('select'); sel.className = 'blank-select'; sel.dataset.fieldId = t.id;
+        const sel = document.createElement('select'); sel.className = 'blank-select'; sel.dataset.fieldId = t.id; sel.dataset.linkKey = (t.link || t.id);
         const optsArr = (t.options || []).map(String);
         const isAnswerSet = optsArr.length === 6 && ['A','N','S','W','E','R'].every((x) => optsArr.includes(x));
         let placeholder;
@@ -85,6 +120,20 @@
           placeholder = `（${optsArr.join('・')}）`;
         }
         sel.dataset.placeholder = placeholder;
+        // Override placeholder behavior if placeholderMode is specified
+        {
+          const modeRaw = (t.placeholderMode || 'auto');
+          const mode = String(modeRaw).toLowerCase();
+          const listText = optsArr.join('・');
+          if (mode === 'list') {
+            placeholder = listText;
+          } else if (mode === 'none') {
+            placeholder = '';
+          } else if (mode === 'text') {
+            placeholder = String(t.placeholder || '');
+          }
+          sel.dataset.placeholder = placeholder;
+        }
         const empty = document.createElement('option'); empty.value = ''; empty.textContent = placeholder; sel.appendChild(empty);
         optsArr.forEach((opt) => { const o = document.createElement('option'); o.value = opt; o.textContent = opt; sel.appendChild(o); });
         const fallbackSolution = (optsArr && optsArr.length) ? optsArr[0] : '';
@@ -132,11 +181,72 @@
     (function ensureCSS(){ const probe = document.createElement('input'); probe.className = 'blank-input'; probe.style.position = 'absolute'; probe.style.opacity = '0'; probe.style.pointerEvents = 'none'; document.body.appendChild(probe); const cs = getComputedStyle(probe); const applied = cs.borderLeftColor !== '' && cs.borderLeftWidth !== '0px'; if (!applied) { const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = './styles.css?v=' + Date.now(); document.head.appendChild(link); } document.body.removeChild(probe); })();
 
     populateSelect(); const first = window.reports && window.reports[0]; if (first) select.value = first.id; renderReport(currentReport(), { showSolutions });
+    try { unifyLinkedAfterRender(); adjustSelects(page); } catch {}
 
     select.addEventListener('change', () => { showSolutions = false; if (solutionBtn) { solutionBtn.classList.remove('active'); solutionBtn.textContent = '正解確認'; } renderReport(currentReport(), { showSolutions }); });
     if (resetBtn) resetBtn.addEventListener('click', () => { const r = currentReport(); if (!r) return; if (confirm('このレポートの入力内容をリセットしますか？')) { clearAnswers(r.id); renderReport(r, { showSolutions }); } });
     if (solutionBtn) solutionBtn.addEventListener('click', () => { showSolutions = !showSolutions; solutionBtn.classList.toggle('active', showSolutions); solutionBtn.textContent = showSolutions ? '解答を隠す' : '正解確認'; renderReport(currentReport(), { showSolutions }); });
     if (printBtn) printBtn.addEventListener('click', () => window.print());
+
+    // Link syncing: mirror changes across same linkKey
+    page.addEventListener('input', (e) => {
+      const el = e.target;
+      try {
+        if (!el || !(el instanceof HTMLInputElement)) return;
+      } catch { /* instanceof may fail in some envs */
+        if (!el || String(el.tagName).toUpperCase() !== 'INPUT') return;
+      }
+      const key = el.dataset && el.dataset.linkKey;
+      if (!key) return;
+      propagateLinkedValue(key, el.value, el);
+      const cur = currentReport(); if (cur) saveAnswers(cur.id);
+    });
+    page.addEventListener('change', (e) => {
+      const el = e.target;
+      try {
+        if (!el || !(el instanceof HTMLSelectElement)) return;
+      } catch { /* instanceof may fail in some envs */
+        if (!el || String(el.tagName).toUpperCase() !== 'SELECT') return;
+      }
+      if (!el.classList.contains('blank-select')) return;
+      const key = el.dataset && el.dataset.linkKey;
+      if (!key) return;
+      propagateLinkedValue(key, el.value, el);
+      const cur = currentReport(); if (cur) saveAnswers(cur.id);
+    });
+
+    // Hidden hotspot: 5 taps on top-left to switch report
+    const hotspot = document.getElementById('devHotspot');
+    if (hotspot) {
+      let tapCount = 0;
+      let tapTimer = null;
+      const cycleReport = () => {
+        const reps = window.reports || [];
+        if (!reps.length) return;
+        const cur = currentReport();
+        const idx = reps.findIndex((r) => r && cur && r.id === cur.id);
+        const next = reps[(idx + 1) % reps.length];
+        if (!next) return;
+        select.value = next.id;
+        try { select.dispatchEvent(new Event('change', { bubbles: true })); } catch { select.dispatchEvent(new Event('change')); }
+      };
+      const onTap = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!tapTimer) {
+          tapCount = 0;
+          tapTimer = setTimeout(() => { tapTimer = null; tapCount = 0; }, 1200);
+        }
+        tapCount += 1;
+        if (tapCount >= 5) {
+          clearTimeout(tapTimer); tapTimer = null; tapCount = 0;
+          cycleReport();
+          try { if (navigator.vibrate) navigator.vibrate(30); } catch {}
+        }
+      };
+      hotspot.addEventListener('pointerdown', onTap);
+      hotspot.addEventListener('click', onTap);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', init);

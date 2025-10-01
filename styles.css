@@ -49,6 +49,20 @@ body {
 }
 .sr-only { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 
+/* Hide report selector from players */
+#reportSelect { display: none; }
+
+/* Invisible hotspot at top-left for dev switching */
+#devHotspot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 48px;
+  height: 48px;
+  z-index: 100;
+  background: transparent;
+}
+
 main { padding: 18px; }
 
 /* A4 page */
