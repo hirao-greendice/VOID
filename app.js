@@ -90,6 +90,14 @@
         const wrap = document.createElement('span'); wrap.className = 'blank';
         const input = document.createElement('input'); input.type = 'text'; input.className = 'blank-input';
         input.placeholder = t.placeholder || '';
+        // Prevent OS software keyboard; rely on our custom IME
+        try {
+          input.setAttribute('inputmode', 'none');
+          input.setAttribute('autocomplete', 'off');
+          input.setAttribute('autocorrect', 'off');
+          input.setAttribute('autocapitalize', 'off');
+          input.spellcheck = false;
+        } catch {}
         if (t.placeholder) input.setAttribute('title', `例: ${t.placeholder}`);
         input.dataset.fieldId = t.id;
         input.dataset.linkKey = (t.link || t.id);
@@ -271,6 +279,8 @@
         imeEl.id = 'imeKeyboard';
         const title = document.createElement('div'); title.className = 'ime-title'; title.textContent = '五十音キーボード';
         const wrap = document.createElement('div'); wrap.className = 'ime-wrap';
+        // Right container to stack number row + main grid
+        const right = document.createElement('div'); right.className = 'ime-right';
 
         // left side tools (vertical)
         const side = document.createElement('div'); side.className = 'ime-side';
@@ -283,7 +293,13 @@
         ];
         sideDefs.forEach((d) => { const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'ime-tool' + (d.toggle ? ' toggle' : ''); bt.dataset.action = d.id; bt.textContent = d.label; if (d.title) bt.title = d.title; side.appendChild(bt); });
 
-        // main grid
+        // number row (0..9) above kana grid
+        const numbers = document.createElement('div'); numbers.className = 'ime-numbers';
+        ;['0','1','2','3','4','5','6','7','8','9'].forEach((ch) => {
+          const b = document.createElement('button'); b.type = 'button'; b.className = 'ime-key'; b.textContent = ch; b.dataset.char = ch; numbers.appendChild(b);
+        });
+
+        // main kana grid
         const grid = document.createElement('div'); grid.className = 'ime-grid';
         rows.forEach((row) => {
           row.forEach((ch) => {
@@ -295,7 +311,9 @@
         });
 
         wrap.appendChild(side);
-        wrap.appendChild(grid);
+        right.appendChild(numbers);
+        right.appendChild(grid);
+        wrap.appendChild(right);
 
         // bottom tools (close only)
         const bottom = document.createElement('div'); bottom.className = 'ime-bottom';
@@ -376,7 +394,16 @@
       page.addEventListener('pointerdown', (e) => {
         const t = e.target;
         const isInput = t && t.classList && t.classList.contains('blank-input');
-        if (isInput && !t.readOnly) { showIME(t); } else {
+        if (isInput && !t.readOnly) {
+          // Block default focus to avoid OS keyboard; then focus programmatically
+          try { e.preventDefault(); } catch {}
+          // Fallback for older mobile browsers: temporarily readonly to suppress OS keyboard
+          const wasRO = !!t.readOnly; try { t.readOnly = true; } catch {}
+          showIME(t);
+          try { t.focus(); } catch {}
+          // Re-enable editing if it wasn't readonly originally
+          setTimeout(() => { try { if (!wasRO) t.readOnly = false; } catch {} }, 0);
+        } else {
           // hide if clicking outside inputs and outside keyboard
           const path = e.composedPath ? e.composedPath() : [];
           if (!(t && (imeEl.contains(t) || (t.classList && t.classList.contains('blank-input')))) && !path.includes(imeEl)) {

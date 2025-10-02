@@ -211,6 +211,8 @@ main { padding: 18px; }
 #imeKeyboard .ime-title { font-size: 14px; color: #667; margin: 0 0 6px; text-align: center; }
 #imeKeyboard { --ime-cell: clamp(29px, 4.6vw, 44px); }
 #imeKeyboard .ime-wrap { display: grid; grid-template-columns: calc(var(--ime-cell) + 6px) auto; gap: 10px; align-items: start; justify-content: center; margin: 0 auto; }
+#imeKeyboard .ime-right { display: grid; grid-auto-rows: auto; gap: 8px; }
+#imeKeyboard .ime-numbers { display: grid; grid-template-columns: repeat(10, var(--ime-cell)); grid-auto-rows: var(--ime-cell); gap: 6px; margin: 0 auto; }
 #imeKeyboard .ime-grid { display: grid; grid-template-columns: repeat(11, var(--ime-cell)); grid-auto-rows: var(--ime-cell); gap: 6px; margin: 0 auto; }
 #imeKeyboard .ime-key {
   user-select: none;
