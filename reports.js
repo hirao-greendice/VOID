@@ -75,7 +75,7 @@
           },
           {
             tokens: [
-              T.choice('judge1', ['カードそのもの', '文字'], 22),
+              T.choice('judge2', ['カードそのもの', '文字'], 22),
               'はカードの',
               T.text('nin56', { solution: '色', size: 8, placeholder: '' }), 'や ',
               T.text('tsuwe', { solution: '向き', size: 8, placeholder: '' }), 'の変更をしたり、\n',
