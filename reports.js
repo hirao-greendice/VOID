@@ -45,22 +45,22 @@
         title: '状況',
         blocks: [
           {
-            title: '資料ケースBについて',
+            title: '第二の試練の解禁について',
             tokens: [
-              '資料ケースBを以下の方法で開けた。\n',
+              '第二の試練の解禁は以下の手順でおこなった。\n',
               '①', T.choice('method', ['ダスシステム', 'ヌルシステム'], 20), 'で、\n素材',
-              T.text('material', { solution: 'レンガ', size: 12, placeholder: '' }), 'を使って、',
+              T.choice('sozai', { options: ['金','レンガ','黒曜石'], size: 10, placeholder: '', solution: 'レンガ', placeholderMode: 'none' }), 'を使って、',
               T.choice('cardS', { options: ['A','N','S','W','E','R'], size: 10, placeholder: '', solution: 'S' }), 'のカードの',
-              T.text('fromColor', { solution: '青', size: 6, placeholder: '' }), '色を',
-              T.text('toColor', { solution: '赤', size: 6, placeholder: '' }), '色に変えた。\n',
-              '②向きを変えた', T.choice('cardN', { options: ['A','N','S','W','E','R'], size: 10, placeholder: '', solution: 'N' }), '/色を変えた',
-              T.choice('cardS2', { options: ['A','N','S','W','E','R'], size: 10, placeholder: '', solution: 'S' }), '/',
+              T.choice('rengacolorchange1', { options: ['赤','緑','黄','紫'], size: 10, placeholder: '', solution: '緑', placeholderMode: 'none' }),'色を',
+              T.choice('rengacolorchange2', { options: ['赤','緑','黄','紫'], size: 10, placeholder: '', solution: '赤', placeholderMode: 'none' }), '色に変えた。\n',
+              '②向きを変えた', T.choice('cardN', { options: ['A','N','S','W','E','R'], size: 10, placeholder: '', solution: 'N' }), '　/　色を変えた',
+              T.choice('cardS2', { options: ['A','N','S','W','E','R'], size: 10, placeholder: '', solution: 'S' }), '　/　',
               T.choice('cardE', { options: ['A','N','S','W','E','R'], size: 10, placeholder: '', solution: 'E' }), 'のカードに、\n　',
-              '資料ケース', T.choice('boxWhich', ['A', 'B'], 6), 'の謎で使用した',
-              T.text('ni', { solution: 'ニ', size: 4, placeholder: '' }), ' ',
-              T.text('tsu', { solution: 'ッ', size: 4, placeholder: '' }), ' ',
-              T.text('ko', { solution: 'コ', size: 4, placeholder: '' }), 'の\n　',
-              T.text('sheet', { solution: '透明シート', size: 18, placeholder: '' }), 'を重ねて、',
+              '第一の試練の解禁の謎で使用した',
+              T.choice('clearsheet1', { options: ['コ','ミ','レ','シ','ニ','ン'], size: 10, placeholder: '', solution: 'ロ', placeholderMode: 'none' }), ' ',
+              T.choice('clearsheet2', { options: ['コ','ミ','レ','シ','ニ','ン'], size: 10, placeholder: '', solution: 'シ', placeholderMode: 'none'}), ' ',
+              T.choice('clearsheet3', { options: ['コ','ミ','レ','シ','ニ','ン'], size: 10, placeholder: '', solution: 'コ', placeholderMode: 'none' }), 'の\n　',
+              '透明シートを重ねて、',
               T.text('knot', { solution: 'ノット', size: 12, placeholder: '' }), 'を示した。'
             ]
           },
@@ -79,7 +79,7 @@
               'はカードの',
               T.text('nin56', { solution: '色', size: 8, placeholder: '' }), 'や ',
               T.text('tsuwe', { solution: '向き', size: 8, placeholder: '' }), 'の変更をしたり、\n',
-              T.text('ko123', { solution: '透明シート', size: 18, placeholder: '' }), 'を重ねたりしても問題なく判定される。'
+              '透明シートを重ねたりしても問題なく判定される。'
             ]
           }
         ]
@@ -142,7 +142,7 @@
         title: '状況',
         blocks: [
           {
-            title: '資料ケースCについて',
+            title: '第三の試練の解禁について',
             tokens: [
               '・相手の会場の実験室には、チーズが置いてある。\n',
               '・２つの会場にある実験室・保管庫にあるアイテムは、\n',
@@ -153,7 +153,7 @@
               '謎ID:', T.choice('riddle', { options: ['001','002','003','004','005','006','007','008','009','010'], size: 10, placeholder: '', solution: '001',placeholderMode: 'none',link: 'riddleid' }), 'の答えから指定できる素材は',
               T.text('onlyMaterial', { solution: 'あああ', placeholder: '', size: 12 }), 'しかない。\n',
               '・アンドロイドは第三の試練をクリアしているので、\n',
-              '資料ケースCのパスワードを突き止めて', T.choice('foundPw', { options: ['いる', 'いない'], size: 8, placeholder: '' }), '。\n'
+              '第三の試練を解禁するパスワードを突き止めて', T.choice('foundPw', { options: ['いる', 'いない'], size: 8, placeholder: '' }), '。\n'
             ]
           }
         ],
@@ -228,7 +228,7 @@
               T.text('androidAns', { solution: 'キャンバス', placeholder: '', size: 14, link: 'androidcall' }), 'という答えになる指示は、指示',
               T.choice('siji', { options: ['1','2','3','4'], size: 10, placeholder: '', solution: 'S',placeholderMode: 'none',link: 'siji' }),  'である。\n',
               'この指示', T.choice('siji', { options: ['1','2','3','4'], size: 10, placeholder: '', solution: 'S',placeholderMode: 'none',link: 'siji' }), 'は、',
-              T.text('instrBy', { solution: 'あああ', placeholder: '', size: 12 }), 'による指示である。\n',
+              T.text('instrBy', { solution: 'あああ',placeholderMode: 'text', placeholder: 'ひらがな2文字で解答', size: 18 }), 'による指示である。\n',
               'アンドロイドの情報によると、\n',
               'アンドロイドの五感は人間と', T.choice('senseSame', { options: ['同じである', '異なる'], size: 14, placeholder: '' }), 'ことがわかる。\n',
               'プレイヤーはこの指示を問題なく知覚できたことから、\n',
@@ -244,7 +244,7 @@
         blocks: [
           {
             tokens: [
-              'アンドロイドは、', T.text('notPerceive', { solution: 'あああ', placeholder: '', size: 12 }), 'が知覚できない環境にいる。'
+              'アンドロイドは、', T.text('notPerceive', { solution: 'あああ', placeholder: 'ひらがな2文字で解答', size: 18 }), 'が知覚できない環境にいる。'
             ]
           }
         ]

@@ -69,7 +69,7 @@ main { padding: 18px; }
 /* A4 page */
 .a4 {
   /* Keep A4 layout on wide screens, but shrink on small viewports */
-  width: min(100%, 210mm);
+  width: min(100%, 230mm);
   min-height: 297mm;
   margin: 0 auto;
   margin-bottom: 400px;
@@ -118,8 +118,8 @@ main { padding: 18px; }
 }
 
 .paragraph {
-  line-height: 2.25; /* 行間を少し広げる */
-  font-size: 16px;
+  line-height: 2.3; /* 行間を少し広げる */
+  font-size: 18px;
   white-space: pre-wrap; /* respect \n in content */
 }
 .paragraph + .paragraph { margin-top: 6px; }
